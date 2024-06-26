@@ -1,5 +1,4 @@
-////CHECK CHECK CHECK CHECK
-///LKMLKFMLKDSMNGÑKERNGBLÑKNDLFKMMRFL
+/////Preselection code for the analysis
 
 #ifdef __CLING__
 R__LOAD_LIBRARY(libDelphes)
