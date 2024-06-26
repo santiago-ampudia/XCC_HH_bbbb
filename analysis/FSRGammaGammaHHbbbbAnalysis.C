@@ -1,3 +1,6 @@
+////CHECK CHECK CHECK CHECK
+///LKMLKFMLKDSMNGÑKERNGBLÑKNDLFKMMRFL
+
 #ifdef __CLING__
 R__LOAD_LIBRARY(libDelphes)
 #include "classes/DelphesClasses.h"
