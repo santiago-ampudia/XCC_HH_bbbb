@@ -1,33 +1,10 @@
 ############################################################
 # DSiD: Delphes card with SiD performance parameters
-# Responsible: Chris Potter
-# DSiD does not enforce electron, muon and photon isolation
-# Reference: ILC Technical Design Report Volume 4: Detectors
-# Adapted from the Delphes card delphes_card_ILD.tcl
-# updated by Dimitris Ntounis: dntounis@slac.stanford.edu
-# to include latest SiD developments: https://arxiv.org/pdf/2110.09965
-
+# Based on papers from: Chris Potter, Dimitris Ntounis
+# Reference: ILC Technical Design Report Volume 4: Detectors, https://arxiv.org/pdf/2110.09965
 # Adapted by Santiago Ampudia March 2025 for XCC study
 ############################################################
 
-#######################################
-# Order of execution of various modules
-# Excluded: 
-# TruthVertexFinder
-# ClusterCounting
-# TimeSmearing
-# TimeOfFlight
-# LumiCalF
-# LumiCalR
-# BeamCalF
-# BeamCalR
-# TimeSmearingNeutrals
-# TimeOfFlightNeutralHadron
-# BCalTowerMerger
-# BCalEFlowMerger
-# BCalEfficiency
-# CTagging
-#######################################
 
 set B 5.0
 set R 2.493
