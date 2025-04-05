@@ -1,0 +1,2 @@
+-- root code to extract relevant physical observables from events that pass the preselection.
+-- code that converts the root TTrees with the observables to .csv files and prepares the data to for the pre-training of the decision trees.
