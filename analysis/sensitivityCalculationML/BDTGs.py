@@ -105,7 +105,7 @@ def load_data(signal_file, background_files, test_size=0.25):
         print(f"  Training: {len(X_train_scaled)} events ({len(signal_train)} signal, {len(bg_train)} background)")
         print(f"  Testing: {len(X_test_scaled)} events ({len(signal_test)} signal, {len(bg_test)} background)")
     
-    return datasets, signal_test, {bg_name: train_test_split(bg, test_size=test_size, random_state=42)[1] 
+    return datasets, signal_test, {bg_name: train_test_split(bg, test_size=test_size, stratify=y, random_state=42)[1] 
                                   for bg_name, bg in background_dfs.items()}
 
 def train_bdtg_models(datasets, n_estimators=200, learning_rate=0.1, max_depth=5):
