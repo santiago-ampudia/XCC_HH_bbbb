@@ -1,10 +1,33 @@
 ############################################################
 # DSiD: Delphes card with SiD performance parameters
-# Based on papers from: Chris Potter, Dimitris Ntounis
-# Reference: ILC Technical Design Report Volume 4: Detectors, https://arxiv.org/pdf/2110.09965
+# Responsible: Chris Potter
+# DSiD does not enforce electron, muon and photon isolation
+# Reference: ILC Technical Design Report Volume 4: Detectors
+# Adapted from the Delphes card delphes_card_ILD.tcl
+# updated by Dimitris Ntounis: dntounis@slac.stanford.edu
+# to include latest SiD developments: https://arxiv.org/pdf/2110.09965
+
 # Adapted by Santiago Ampudia March 2025 for XCC study
 ############################################################
 
+#######################################
+# Order of execution of various modules
+# Excluded: 
+# TruthVertexFinder
+# ClusterCounting
+# TimeSmearing
+# TimeOfFlight
+# LumiCalF
+# LumiCalR
+# BeamCalF
+# BeamCalR
+# TimeSmearingNeutrals
+# TimeOfFlightNeutralHadron
+# BCalTowerMerger
+# BCalEFlowMerger
+# BCalEfficiency
+# CTagging
+#######################################
 
 set B 5.0
 set R 2.493
@@ -845,7 +868,8 @@ module BTagging BTaggingAntiKt {
   
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
-  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0} 
+  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
+  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0}
 }
 
 module BTagging BTagging0 {
@@ -857,7 +881,8 @@ module BTagging BTagging0 {
   
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
-  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0} 
+  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
+  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
 }
 
 module BTagging BTagging5 {
@@ -869,7 +894,8 @@ module BTagging BTagging5 {
   
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
-  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0} 
+  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
+  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
 }
 
 module BTagging BTagging10 {
@@ -881,7 +907,8 @@ module BTagging BTagging10 {
   
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
-  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0} 
+  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
+  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
 }
 
 module BTagging BTagging15 {
@@ -893,7 +920,8 @@ module BTagging BTagging15 {
   
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
-  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0} 
+  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
+  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
 }
 
 module BTagging BTagging20 {
@@ -905,7 +933,8 @@ module BTagging BTagging20 {
   
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
-  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0} 
+  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
+  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
 }
 
 module BTagging BTagging25 {
@@ -917,7 +946,8 @@ module BTagging BTagging25 {
   
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
-  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0} 
+  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
+  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
 }
 
 module BTagging BTagging30 {
@@ -929,7 +959,8 @@ module BTagging BTagging30 {
   
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
-  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0} 
+  add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
+  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
 }
 
 #############
@@ -1170,7 +1201,7 @@ module TreeWriter TreeWriter {
   add Branch UniqueObjectFinder10/photons Photon Photon
   add Branch UniqueObjectFinder10/electrons Electron Electron
   add Branch UniqueObjectFinder10/muons Muon Muon
-  add Branch UniqueObjectFinder10/jets JetAntiKt Jet
+  add Branch UniqueObjectFinderAntiKt/jets JetAntiKt Jet
   add Branch UniqueObjectFinder0/jets Jet0 Jet
   add Branch UniqueObjectFinder5/jets Jet5 Jet
   add Branch UniqueObjectFinder10/jets Jet10 Jet
