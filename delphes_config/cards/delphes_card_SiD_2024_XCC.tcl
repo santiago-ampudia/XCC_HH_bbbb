@@ -869,7 +869,7 @@ module BTagging BTaggingAntiKt {
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
   add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
-  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0}
+  
 }
 
 module BTagging BTagging0 {
@@ -882,7 +882,7 @@ module BTagging BTagging0 {
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
   add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
-  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
+   
 }
 
 module BTagging BTagging5 {
@@ -895,7 +895,7 @@ module BTagging BTagging5 {
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
   add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
-  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
+   
 }
 
 module BTagging BTagging10 {
@@ -908,7 +908,7 @@ module BTagging BTagging10 {
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
   add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
-  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
+   
 }
 
 module BTagging BTagging15 {
@@ -921,7 +921,7 @@ module BTagging BTagging15 {
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
   add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
-  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
+   
 }
 
 module BTagging BTagging20 {
@@ -934,7 +934,7 @@ module BTagging BTagging20 {
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
   add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
-  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
+   
 }
 
 module BTagging BTagging25 {
@@ -947,7 +947,7 @@ module BTagging BTagging25 {
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
   add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
-  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
+   
 }
 
 module BTagging BTagging30 {
@@ -960,7 +960,7 @@ module BTagging BTagging30 {
   add EfficiencyFormula {0} {(abs(eta)<2.17)*0.00045+0.0}
   add EfficiencyFormula {4} {(abs(eta)<2.17)*0.007+0.0}
   add EfficiencyFormula {5} {(abs(eta)<2.17)*0.85+0.0}
-  add EfficiencyFormula {21} {(abs(eta)<2.17)*0.013+0.0} 
+   
 }
 
 #############
