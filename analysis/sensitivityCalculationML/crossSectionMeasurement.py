@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 import math
 import os
 import argparse
@@ -29,11 +28,24 @@ def find_cross_section_HHbbbb(HH_remaining, back_remaining, luminosity=LUMINOSIT
     x_values = np.arange(x_min, x_max, 0.01)
     s_values = x_values * total_effi * total_BR
     
-    chi_squared_values = 2 * ((s_values + b) - n * np.log(s_values + b) + n * np.log(b))
+    # Calculate ln(n!) using Stirling's approximation for large n, exact for small n
+    if n < 100:
+        ln_n_factorial = sum(np.log(i) for i in range(1, int(n) + 1))
+    else:
+        # Stirling's approximation: ln(n!) ≈ n*ln(n) - n
+        ln_n_factorial = n * np.log(n) - n
     
-    min_idx = np.argmin(chi_squared_values)
-    min_chi_squared = chi_squared_values[min_idx]
+    # New chi-squared formula: χ² = 2*(s+b+ln(n!)-n*ln(s+b))
+    chi_squared_values_raw = 2 * (s_values + b + ln_n_factorial - n * np.log(s_values + b))
+    
+    # Find minimum before normalization
+    min_idx = np.argmin(chi_squared_values_raw)
+    min_chi_squared_raw = chi_squared_values_raw[min_idx]
     min_x = x_values[min_idx]
+    
+    # Normalize chi-squared so minimum is at 0
+    chi_squared_values = chi_squared_values_raw - min_chi_squared_raw
+    min_chi_squared = 0.0
     
     cross_section = min_x / luminosity
     
@@ -42,14 +54,16 @@ def find_cross_section_HHbbbb(HH_remaining, back_remaining, luminosity=LUMINOSIT
     print(f"min ChiSquared: {min_chi_squared:.6f} for x: {min_x:.6f}")
     print(f"Cross section: {cross_section:.6f} fb")
     
-    plt.figure(figsize=(10, 8))
+    # Use ATLAS plotting style
+    plt.style.use('classic')
+    fig, ax = plt.subplots(figsize=(10, 8))
     
     plot_step = max(1, len(x_values) // 10000)
-    plt.plot(x_values[::plot_step], chi_squared_values[::plot_step], 'b-')
+    ax.plot(x_values[::plot_step], chi_squared_values[::plot_step], 'b-', linewidth=1.5)
     
-    plt.axhline(y=min_chi_squared + 1, color='r', linestyle='-', linewidth=2)
+    ax.axhline(y=1, color='r', linestyle='--', alpha=0.7, linewidth=1.5)
     
-    target_chi = min_chi_squared + 1
+    target_chi = 1.0
     
     left_mask = (x_values < min_x) & (np.abs(chi_squared_values - target_chi) < 0.1)
     if np.any(left_mask):
@@ -60,7 +74,7 @@ def find_cross_section_HHbbbb(HH_remaining, back_remaining, luminosity=LUMINOSIT
         x_error_left = left_candidates[left_idx]
         distance_min_left = left_distances[left_idx]
     else:
-        x_error_left, distance_min_left = find_error_point(min_x, min_chi_squared, True, total_effi, total_BR, n, b)
+        x_error_left, distance_min_left = find_error_point(min_x, min_chi_squared_raw, True, total_effi, total_BR, n, b, ln_n_factorial)
     
     right_mask = (x_values > min_x) & (np.abs(chi_squared_values - target_chi) < 0.1)
     if np.any(right_mask):
@@ -71,7 +85,7 @@ def find_cross_section_HHbbbb(HH_remaining, back_remaining, luminosity=LUMINOSIT
         x_error_right = right_candidates[right_idx]
         distance_min_right = right_distances[right_idx]
     else:
-        x_error_right, distance_min_right = find_error_point(min_x, min_chi_squared, False, total_effi, total_BR, n, b)
+        x_error_right, distance_min_right = find_error_point(min_x, min_chi_squared_raw, False, total_effi, total_BR, n, b, ln_n_factorial)
     
     error_left = abs((x_error_left - min_x) / (luminosity * cross_section))
     error_right = abs((x_error_right - min_x) / (luminosity * cross_section))
@@ -79,45 +93,32 @@ def find_cross_section_HHbbbb(HH_remaining, back_remaining, luminosity=LUMINOSIT
     print(f"errorLeft: {error_left:.6f} for x: {x_error_left:.6f} with distance: {distance_min_left:.6f}")
     print(f"errorRight: {error_right:.6f} for x: {x_error_right:.6f} with distance: {distance_min_right:.6f}")
     
-    plt.axvline(x=x_error_left, color='r', linestyle='--', alpha=0.7)
-    plt.axvline(x=x_error_right, color='r', linestyle='--', alpha=0.7)
-    plt.axvline(x=min_x, color='g', linestyle='-', alpha=0.7)
+    ax.axvline(x=x_error_left, color='r', linestyle='--', alpha=0.7, linewidth=1.5)
+    ax.axvline(x=x_error_right, color='r', linestyle='--', alpha=0.7, linewidth=1.5)
     
-    plt.xlabel('cross-section*luminosity', fontsize=12)
-    plt.ylabel('$\\chi^{2}$', fontsize=14)
-    plt.title('Chi-Squared vs Cross Section', fontsize=14)
+    # Bold axis labels with proper formatting matching other plots
+    ax.set_xlabel(r'$\mathbf{\sigma_{HH}} \times \mathbf{\mathcal{L}}$ $\mathbf{(fb^{-1})}$', fontsize=14, fontweight='bold', loc='right')
+    ax.set_ylabel(r'$\mathbf{\chi^{2} = -2ln(L_{s+b})}$', fontsize=14, fontweight='bold', loc='top')
+    
+    # Set axis ranges
+    ax.set_xlim(0, 3000)
     
     y_range = np.percentile(chi_squared_values[np.isfinite(chi_squared_values)], [5, 95])
-    y_min = max(min_chi_squared - 2, y_range[0])
-    y_max = min(min_chi_squared + 10, y_range[1])
-    plt.ylim(y_min, y_max)
+    y_min = 0.0
+    y_max = min(10, y_range[1])
+    ax.set_ylim(y_min, y_max)
     
-    legend_text = [
-        "$\\chi^{2} \\equiv -2\\ln\\frac{L_{s+b}}{L_{b}}$",
-        "$L_{s+b} = \\prod_{i} \\frac{e^{-(s_{i}+b_{i})} (s_{i} + b_{i})^{n_{i}}}{n_{i}!}$",
-        "$L_{b} = \\prod_{i} \\frac{e^{-b_{i}} b_{i}^{n_{i}}}{n_{i}!}$",
-        "uncertainty"
-    ]
+    # ATLAS style: increase tick label size
+    ax.tick_params(axis='both', which='major', labelsize=14)
     
-    legend_elements = [
-        Line2D([0], [0], color='white', lw=0, label=legend_text[0]),
-        Line2D([0], [0], color='white', lw=0, label=legend_text[1]),
-        Line2D([0], [0], color='white', lw=0, label=legend_text[2]),
-        Line2D([0], [0], color='red', lw=2, label=legend_text[3])
-    ]
+    # Save plot in the same directory as this script file
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    plot_path = os.path.join(script_dir, 'chiSquared.png')
+    plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+    print(f"Plot saved to: {plot_path}")
     
-    plt.legend(handles=legend_elements, loc='upper right', fontsize=10, 
-              frameon=False, handlelength=0, handletextpad=0)
-    
-    result_text = f"Cross section: {cross_section:.2f} $\\pm$ {error_right:.2f}/{error_left:.2f} fb"
-    plt.annotate(result_text, xy=(0.05, 0.95), xycoords='axes fraction',
-                 bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", alpha=0.8),
-                 fontsize=12)
-    
-    os.makedirs('analysis', exist_ok=True)
-    plt.savefig('analysis/chiSquared.png', dpi=300, bbox_inches='tight')
-    print(f"Plot saved to: analysis/chiSquared.png")
-    plt.close()
+    # Display the plot on screen
+    plt.show()
     
     return {
         'cross_section': float(cross_section),
@@ -127,9 +128,9 @@ def find_cross_section_HHbbbb(HH_remaining, back_remaining, luminosity=LUMINOSIT
         'min_x': float(min_x)
     }
 
-def find_error_point(min_x, min_chi_squared, is_left, total_effi, total_BR, n, b):
+def find_error_point(min_x, min_chi_squared_raw, is_left, total_effi, total_BR, n, b, ln_n_factorial):
    
-    target_chi = min_chi_squared + 1
+    target_chi = 1.0  # After normalization, we look for chi^2 = 1
     x_error = min_x
     distance_min = float('inf')
     
@@ -142,7 +143,10 @@ def find_error_point(min_x, min_chi_squared, is_left, total_effi, total_BR, n, b
     
     for x in search_range:
         s = x * total_effi * total_BR
-        chi_squared = 2 * ((s + b) - n * math.log(s + b) + n * math.log(b))
+        # New chi-squared formula: χ² = 2*(s+b+ln(n!)-n*ln(s+b))
+        chi_squared_raw = 2 * (s + b + ln_n_factorial - n * math.log(s + b))
+        # Normalize by subtracting minimum
+        chi_squared = chi_squared_raw - min_chi_squared_raw
         
         if abs(chi_squared - target_chi) < distance_min:
             distance_min = abs(chi_squared - target_chi)
@@ -159,8 +163,8 @@ def parse_arguments():
                         help='Number of HH signal events remaining after selection')
     parser.add_argument('--back', type=float, required=True,
                         help='Number of background events remaining after selection')
-    parser.add_argument('--output', type=str, default='analysis/chiSquared.png',
-                        help='Output file path for the chi-squared plot (default: analysis/chiSquared.png)')
+    parser.add_argument('--output', type=str, default='chiSquared.png',
+                        help='Output file path for the chi-squared plot (default: chiSquared.png)')
     return parser.parse_args()
 
 # example usage:
