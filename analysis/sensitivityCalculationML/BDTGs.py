@@ -13,8 +13,74 @@ import subprocess
 
 np.random.seed(42)
 
+def get_excluded_variables():
+    """
+    Define which variables should be excluded from the analysis.
+    
+    Returns:
+        list: List of variable names to exclude from the datasets
+    """
+    # Variables to exclude from the analysis
+    excluded_vars = [
+        'invMassB1FitBest',
+        'invMassB2FitBest', 
+        'chi2ndfBest',
+        'jetPairMassDeltaFit'
+    ]
+    
+    return excluded_vars
+
+def apply_variable_transformations(df):
+    """
+    Apply transformations to specific variables in the dataset.
+    
+    Modifications:
+    - jetPairMassDelta: Redefined as (invMassB1-125)^2 + (invMassB2-125)^2
+    - All boost variables: Take absolute values
+    
+    Args:
+        df (DataFrame): Input dataframe with raw variables
+        
+    Returns:
+        DataFrame: Dataframe with transformed variables
+    """
+    # Create a copy to avoid modifying the original dataframe
+    df = df.copy()
+    
+    # Redefine jetPairMassDelta as (invMassB1-125)^2 + (invMassB2-125)^2
+    if 'jetPairMassDelta' in df.columns and 'invMassB1' in df.columns and 'invMassB2' in df.columns:
+        df['jetPairMassDelta'] = (df['invMassB1'] - 125)**2 + (df['invMassB2'] - 125)**2
+        print("  Transformed jetPairMassDelta = (invMassB1-125)^2 + (invMassB2-125)^2")
+    
+    # Take absolute value of all boost variables
+    boost_vars = ['boostB1', 'boostB2', 'boostB3', 'boostB4', 'boostSystem']
+    for boost_var in boost_vars:
+        if boost_var in df.columns:
+            df[boost_var] = df[boost_var].abs()
+    
+    # Print which boost variables were transformed
+    boost_vars_present = [var for var in boost_vars if var in df.columns]
+    if boost_vars_present:
+        print(f"  Applied absolute value to boost variables: {', '.join(boost_vars_present)}")
+    
+    return df
+
 def load_data(signal_file, background_files, test_size=0.25):
+    # Get list of variables to exclude from the analysis
+    excluded_vars = get_excluded_variables()
+    
+    # Load signal data from CSV file
     signal_data = pd.read_csv(signal_file)
+    
+    # Remove excluded variables from signal data
+    excluded_vars_present = [var for var in excluded_vars if var in signal_data.columns]
+    if excluded_vars_present:
+        print(f"\nExcluding variables from analysis: {', '.join(excluded_vars_present)}")
+        signal_data = signal_data.drop(columns=excluded_vars_present)
+    
+    # Apply variable transformations to signal data
+    signal_data = apply_variable_transformations(signal_data)
+    
     signal_data['label'] = 1  # Add label column with value 1 (signal)
     
     print(f"\nSignal file: {os.path.basename(signal_file)}")
@@ -42,6 +108,15 @@ def load_data(signal_file, background_files, test_size=0.25):
         bg_name = os.path.splitext(os.path.basename(bg_file))[0]
         try:
             bg = pd.read_csv(bg_file)
+            
+            # Remove excluded variables from background data
+            excluded_vars_present_bg = [var for var in excluded_vars if var in bg.columns]
+            if excluded_vars_present_bg:
+                bg = bg.drop(columns=excluded_vars_present_bg)
+            
+            # Apply variable transformations to background data
+            bg = apply_variable_transformations(bg)
+            
             bg['label'] = 0  
             
             background_dfs[bg_name] = bg
