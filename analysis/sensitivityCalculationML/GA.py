@@ -227,6 +227,10 @@ def eaAdvanced(population, toolbox, cxpb, mutpb, ngen, stats=None,
         for i in range(1, len(offspring), 2):
             if random.random() < cxpb:
                 offspring[i-1], offspring[i] = toolbox.mate(offspring[i-1], offspring[i])
+                # Clamp values to [0, 1] after crossover to ensure valid BDTG thresholds
+                for j in range(len(offspring[i-1])):
+                    offspring[i-1][j] = max(0.0, min(1.0, offspring[i-1][j]))
+                    offspring[i][j] = max(0.0, min(1.0, offspring[i][j]))
                 del offspring[i-1].fitness.values
                 del offspring[i].fitness.values
         
